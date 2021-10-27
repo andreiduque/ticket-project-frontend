@@ -20,13 +20,13 @@
 		"styled-components": "^5.3.3"
 	},
 	"devDependencies": {
-		"@techmmunity/eslint-config": "^5.0.4",
+		"@techmmunity/eslint-config": "^5.1.1",
 		"@types/react": "^17.0.0",
 		"@types/react-dom": "^17.0.0",
 		"@types/react-router-dom": "^5.3.1",
 		"@types/styled-components": "^5.1.15",
 		"@vitejs/plugin-react": "^1.0.0",
-		"eslint": "^8.0.1",
+		"eslint": "^8.1.0",
 		"husky": "^7.0.2",
 		"lint-staged": "^11.2.3",
 		"prettier": "^2.4.1",

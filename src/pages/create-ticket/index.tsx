@@ -5,14 +5,28 @@ import { Form, Input, Radio, InputNumber, DatePicker, Button } from "antd";
 import { TicketTypeEnum } from "enums/ticket-type";
 import locale from "antd/es/date-picker/locale/pt_BR";
 import { Moment } from "moment";
-import { useState } from "react";
+import { RuleRender } from "antd/lib/form";
 
 const Create = () => {
 	const { create } = useApi();
 	const { requestState, setErrorState, setLoadingState, setSuccessState } =
 		useLoading();
 
-	const [type, setType] = useState<TicketTypeEnum>(TicketTypeEnum.PERCENTAGE);
+	const validateDiscountPercentage: RuleRender = ({ getFieldValue }) => ({
+		validator: (_, discountValue) => {
+			if (
+				getFieldValue("type") === TicketTypeEnum.PERCENTAGE &&
+				// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+				parseFloat(discountValue) > 100
+			) {
+				return Promise.reject(
+					"Descontos do tipo porcentagem não aceitam valores superiores a 100.",
+				);
+			}
+
+			return Promise.resolve();
+		},
+	});
 
 	const onFinish = async (values: any) => {
 		try {
@@ -41,17 +55,18 @@ const Create = () => {
 	};
 
 	const disableDate = (current: Moment) => {
-		return current.valueOf() < Date.now();
-	};
-
-	const onTypeChange = (event: any) => {
-		setType(event.target.value);
+		return current.isBefore(new Date());
 	};
 
 	return (
 		<div>
 			<div>
-				<Form name="create" onFinish={onFinish} onFinishFailed={onFinishFailed}>
+				<Form
+					initialValues={{ type: TicketTypeEnum.PERCENTAGE }}
+					name="create"
+					onFinish={onFinish}
+					onFinishFailed={onFinishFailed}
+				>
 					<Form.Item name="code" label="Código">
 						<Input placeholder="Insira um código para o cupom" />
 					</Form.Item>
@@ -81,10 +96,7 @@ const Create = () => {
 							},
 						]}
 					>
-						<Radio.Group
-							defaultValue={TicketTypeEnum.PERCENTAGE}
-							onChange={onTypeChange}
-						>
+						<Radio.Group>
 							<Radio value={TicketTypeEnum.PERCENTAGE}>Porcentagem</Radio>
 							<Radio value={TicketTypeEnum.RAW}>Valor bruto</Radio>
 						</Radio.Group>
@@ -97,16 +109,10 @@ const Create = () => {
 								required: true,
 								message: "Valor do desconto é um campo obrigatório",
 							},
+							validateDiscountPercentage,
 						]}
 					>
-						{
-							// eslint-disable-next-line multiline-ternary
-							type === TicketTypeEnum.PERCENTAGE ? (
-								<InputNumber type="number" min={1} max={100} />
-							) : (
-								<InputNumber type="number" min={1} />
-							)
-						}
+						<InputNumber type="number" min={1} />
 					</Form.Item>
 					<Form.Item
 						name="expirationDate"
