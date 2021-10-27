@@ -5,9 +5,7 @@
 		"@techmmunity/eslint-config/ts-react"
 	],
 	"rules": {
-		"filenames/match-regex": "off",
 		"@typescript-eslint/naming-convention": "off",
-		"react/react-in-jsx-scope": "off",
 		"react-hooks/exhaustive-deps": "off"
 	}
 }
