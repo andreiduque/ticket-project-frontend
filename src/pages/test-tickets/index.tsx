@@ -2,7 +2,7 @@ import { Input, Button, Form } from "antd";
 import { TicketTypeEnum } from "enums/ticket-type";
 import { useApi } from "hooks/api";
 import { useLoading } from "hooks/loading";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 
 interface FormData {
@@ -17,7 +17,7 @@ const TestTickets = () => {
 
 	const [result, setResult] = useState<string>();
 
-	const onFinish = async ({ code, price }: FormData) => {
+	const onFinish = useCallback(async ({ code, price }: FormData) => {
 		try {
 			setLoadingState();
 
@@ -30,13 +30,12 @@ const TestTickets = () => {
 				currency: "BRL",
 			});
 
-			const comparePriceDiscount = () =>
-				ticketFound.discountValue > priceNumber
-					? // eslint-disable-next-line @typescript-eslint/no-magic-numbers
-					  setResult(formatter.format(0))
-					: setResult(
-							formatter.format(priceNumber - ticketFound.discountValue),
-					  );
+			/*
+			 * Beginning of ticket discount manipulation
+			 *
+			 * Accordingly with ticket type, formats the price after discount and
+			 * prevents negative values.
+			 */
 
 			if (ticketFound.type === TicketTypeEnum.PERCENTAGE) {
 				setResult(
@@ -45,9 +44,14 @@ const TestTickets = () => {
 						((100 - ticketFound.discountValue) / 100) * priceNumber,
 					),
 				);
+			} else if (ticketFound.discountValue > priceNumber) {
+				// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+				setResult(formatter.format(0));
 			} else {
-				comparePriceDiscount();
+				setResult(formatter.format(priceNumber - ticketFound.discountValue));
 			}
+
+			// End of ticket discount manipulation
 
 			setSuccessState();
 		} catch (err: any) {
@@ -55,15 +59,15 @@ const TestTickets = () => {
 			console.error(err);
 			setErrorState();
 		}
-	};
+	}, []);
 
-	const onFinishFailed = (error: any) => {
+	const onFinishFailed = useCallback((error: any) => {
 		setErrorState();
 
 		toast.error("Cupom inválido");
 		// eslint-disable-next-line no-console
 		console.log(error);
-	};
+	}, []);
 
 	return (
 		<>

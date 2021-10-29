@@ -1,8 +1,9 @@
 import { TicketTypeEnum } from "enums/ticket-type";
 import { TicketEntity } from "hooks/api/types/ticket/ticket-entity";
+import { memo } from "react";
 import { Container } from "./styles";
 
-export const Ticket: FC<{ ticket: TicketEntity }> = ({ ticket }) => {
+export const Ticket = memo(({ ticket }: { ticket: TicketEntity }) => {
 	const { name, description, type, discountValue, code } = ticket;
 
 	const getValue = () => {
@@ -30,4 +31,4 @@ export const Ticket: FC<{ ticket: TicketEntity }> = ({ ticket }) => {
 			</div>
 		</Container>
 	);
-};
+});

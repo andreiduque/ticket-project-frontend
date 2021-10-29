@@ -3,6 +3,7 @@ import { RuleRender } from "antd/lib/form";
 import { useAuthContext } from "context/auth";
 import { useApi } from "hooks/api";
 import { useLoading } from "hooks/loading";
+import { useCallback } from "react";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,17 +16,20 @@ const Register = () => {
 		useLoading();
 	const { setToken } = useAuthContext();
 
-	const validateConfirmPassword: RuleRender = ({ getFieldValue }) => ({
-		validator: (_, value) => {
-			if (!value || getFieldValue("password") === value) {
-				return Promise.resolve();
-			}
+	const validateConfirmPassword: RuleRender = useCallback(
+		({ getFieldValue }) => ({
+			validator: (_, value) => {
+				if (!value || getFieldValue("password") === value) {
+					return Promise.resolve();
+				}
 
-			return Promise.reject("Senha não corresponde");
-		},
-	});
+				return Promise.reject("Senha não corresponde");
+			},
+		}),
+		[],
+	);
 
-	const onFinish = async (values: any) => {
+	const onFinish = useCallback(async (values: any) => {
 		try {
 			setLoadingState();
 
@@ -48,15 +52,15 @@ const Register = () => {
 			// eslint-disable-next-line no-console
 			console.log(err);
 		}
-	};
+	}, []);
 
-	const onFinishFailed = (error: any) => {
+	const onFinishFailed = useCallback((error: any) => {
 		setErrorState();
 
 		toast.error("Falha ao se registrar");
 		// eslint-disable-next-line no-console
 		console.log(error);
-	};
+	}, []);
 
 	return (
 		<Container>
