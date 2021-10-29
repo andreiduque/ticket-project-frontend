@@ -5,6 +5,7 @@ import { useLoading } from "hooks/loading";
 import { useHistory } from "react-router";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
 import { Container, FormContainer } from "./styles";
 
 const Login = () => {
@@ -14,7 +15,7 @@ const Login = () => {
 		useLoading();
 	const { setToken } = useAuthContext();
 
-	const onFinish = async (values: any) => {
+	const onFinish = useCallback(async (values: any) => {
 		try {
 			setLoadingState();
 
@@ -37,15 +38,15 @@ const Login = () => {
 			// eslint-disable-next-line no-console
 			console.log(err);
 		}
-	};
+	}, []);
 
-	const onFinishFailed = (error: any) => {
+	const onFinishFailed = useCallback((error: any) => {
 		setErrorState();
 
 		toast.error("Falha ao tentar acessar");
 		// eslint-disable-next-line no-console
 		console.log(error);
-	};
+	}, []);
 
 	return (
 		<Container>

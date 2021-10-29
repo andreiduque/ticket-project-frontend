@@ -1,21 +1,21 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export const useLoading = () => {
 	const [requestState, setRequestState] = useState<
 		"DEFAULT" | "ERROR" | "LOADING" | "SUCCESS"
 	>("DEFAULT");
 
-	const setErrorState = () => {
+	const setErrorState = useCallback(() => {
 		setRequestState("ERROR");
-	};
+	}, []);
 
-	const setLoadingState = () => {
+	const setLoadingState = useCallback(() => {
 		setRequestState("LOADING");
-	};
+	}, []);
 
-	const setSuccessState = () => {
+	const setSuccessState = useCallback(() => {
 		setRequestState("SUCCESS");
-	};
+	}, []);
 
 	return {
 		requestState,

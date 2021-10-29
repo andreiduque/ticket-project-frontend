@@ -6,29 +6,33 @@ import { TicketTypeEnum } from "enums/ticket-type";
 import locale from "antd/es/date-picker/locale/pt_BR";
 import { Moment } from "moment";
 import { RuleRender } from "antd/lib/form";
+import { useCallback } from "react";
 
 const Create = () => {
 	const { create } = useApi();
 	const { requestState, setErrorState, setLoadingState, setSuccessState } =
 		useLoading();
 
-	const validateDiscountPercentage: RuleRender = ({ getFieldValue }) => ({
-		validator: (_, discountValue) => {
-			if (
-				getFieldValue("type") === TicketTypeEnum.PERCENTAGE &&
-				// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-				parseFloat(discountValue) > 100
-			) {
-				return Promise.reject(
-					"Descontos do tipo porcentagem não aceitam valores superiores a 100.",
-				);
-			}
+	const validateDiscountPercentage: RuleRender = useCallback(
+		({ getFieldValue }) => ({
+			validator: (_, discountValue) => {
+				if (
+					getFieldValue("type") === TicketTypeEnum.PERCENTAGE &&
+					// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+					parseFloat(discountValue) > 100
+				) {
+					return Promise.reject(
+						"Descontos do tipo porcentagem não aceitam valores superiores a 100.",
+					);
+				}
 
-			return Promise.resolve();
-		},
-	});
+				return Promise.resolve();
+			},
+		}),
+		[],
+	);
 
-	const onFinish = async (values: any) => {
+	const onFinish = useCallback(async (values: any) => {
 		try {
 			setLoadingState();
 
@@ -44,15 +48,15 @@ const Create = () => {
 			// eslint-disable-next-line no-console
 			console.error(err);
 		}
-	};
+	}, []);
 
-	const onFinishFailed = (error: any) => {
+	const onFinishFailed = useCallback((error: any) => {
 		setErrorState();
 
 		toast.error("Falha ao criar cupom");
 		// eslint-disable-next-line no-console
 		console.error(error);
-	};
+	}, []);
 
 	const disableDate = (current: Moment) => {
 		return current.isBefore(new Date());

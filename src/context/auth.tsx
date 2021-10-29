@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
 interface AuthContextType {
 	token?: string;
@@ -15,11 +15,11 @@ export const AuthProvider: FC<{ children: Array<JSX.Element> }> = ({
 }) => {
 	const [token, setToken] = useState<string>();
 
-	const logout = () => {
+	const logout = useCallback(() => {
 		localStorage.removeItem("userToken");
 
 		setToken(undefined);
-	};
+	}, []);
 
 	return (
 		<AuthContext.Provider value={{ ...DEFAULT_VALUE, token, setToken, logout }}>
